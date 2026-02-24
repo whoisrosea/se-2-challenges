@@ -517,9 +517,10 @@ completion_message: |
 
   ## Next Steps
 
-  Run `yarn test` to verify all tests pass, then follow the README to:
-  1. Deploy to a testnet with `yarn deploy`
-  2. Ship the frontend with `yarn vercel`
-  3. Submit your challenge at [SpeedRunEthereum.com](https://speedrunethereum.com)!
+  - Run `yarn test` to verify all tests pass
 
-  Head to your next challenge at [SpeedRunEthereum.com](https://speedrunethereum.com)!
+  To submit your challenge, complete the remaining checkpoints on the
+  [SpeedRunEthereum challenge page](https://speedrunethereum.com/challenge/crowdfunding):
+  - Deploy your contract
+  - Ship your frontend
+  - Verify your contract
