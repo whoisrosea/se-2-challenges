@@ -14,11 +14,32 @@ welcome_message: |
   If enough ETH is collected before a deadline, the funds go to a `FundingRecipient` contract.
   If not, everyone gets their money back. The users only have to trust the code, not each other.
 
+  **Before we start, open separate terminal windows** (not this one!) and run:
+
+  1. Start your local blockchain:
+     ```
+     yarn chain
+     ```
+  2. In another terminal, deploy the contracts:
+     ```
+     yarn deploy
+     ```
+  3. In another terminal, start the frontend:
+     ```
+     yarn start
+     ```
+  4. Open http://localhost:3000 in your browser.
+
+  > These commands run continuously, so each needs its own terminal window.
+
   **How this works:**
   - I'll teach you a concept, then give you a coding task
   - You write the code in your editor, then say **"check"** and I'll run the tests
-  - Say **"hint"** anytime you're stuck for progressive help
+  - After each checkpoint you'll interact with the frontend to see your code in action
+  - Say **"hint"** anytime you're stuck — hints get progressively more specific
   - Use **`/skip`** if you want me to write the code for you (I'll still explain it!)
+
+  > Re-run `yarn deploy` whenever you want to deploy new contracts to the frontend. If you haven't made any contract changes, you can run `yarn deploy --reset` for a completely fresh deploy.
 
   Your progress is saved automatically. Use `/start` to resume anytime.
 
@@ -99,6 +120,21 @@ checkpoints:
         3. **Fill in the `contribute()` function** body to:
            - Add the sent amount to the sender's balance in the mapping
            - Emit the `Contribution` event with the sender's address and the amount
+
+        ### Try it out
+
+        After writing the code:
+
+        1. Run `yarn deploy --reset` to redeploy your contracts.
+        2. Open http://localhost:3000 — go to the **Debug Contracts** tab.
+        3. Try calling `contribute()` with some ETH and check:
+           - Does the balance of the `CrowdFund` contract go up?
+           - Is your `balance` correctly tracked in the `balances` mapping?
+        4. Go to the **Contributions** tab — do you see your contribution events?
+
+        > Need more funds? Click "Grab funds from faucet" or use the Faucet feature at the bottom left.
+
+        > Need to troubleshoot? `hardhat/console.sol` is already imported so you can use `console.log()` in your Solidity code. Output appears in your `yarn chain` terminal.
 
         When you're done, say **"check"** and I'll run the tests!
       file: "packages/hardhat/contracts/CrowdFund.sol"
@@ -233,6 +269,23 @@ checkpoints:
            - Revert with `WithdrawTransferFailed` if the send fails
 
         Remember the pattern: **Checks** -> **Effects** -> **Interactions**!
+
+        ### Try it out
+
+        To test `withdraw()` through the frontend, temporarily set `openToWithdraw` to `true` by default:
+        ```solidity
+        bool public openToWithdraw = true;
+        ```
+
+        1. Run `yarn deploy --reset` to redeploy your contracts.
+        2. Open http://localhost:3000 — use the **Crowdfund** or **Debug Contracts** tab.
+        3. Contribute some ETH, then try withdrawing — does your ETH come back?
+        4. What happens if you try to withdraw again? Does it always fail?
+        5. Try with multiple users (open an incognito window for a fresh burner wallet).
+
+        > **Important:** Once you're done testing, switch `openToWithdraw` back to its default (`bool public openToWithdraw;`) before running the tests!
+
+        Say **"check"** when you're ready!
       file: "packages/hardhat/contracts/CrowdFund.sol"
       test: "yarn test --grep 'Checkpoint2'"
       hints:
@@ -379,7 +432,19 @@ checkpoints:
            - Return `deadline - block.timestamp` if the deadline hasn't passed
            - Return `0` if the deadline has passed (to avoid underflow!)
 
-        When you're done, say **"check"**!
+        ### Try it out
+
+        Your **Crowdfund** tab should be almost fully working now! Test out the full flow:
+
+        1. Run `yarn deploy --reset` to get a fresh contract with a new deadline.
+        2. Open http://localhost:3000 — go to the **Crowdfund** tab.
+        3. Can you see `timeLeft` counting down?
+        4. **Test the success path:** Contribute more than 1 ETH total before the deadline expires, then click `Execute!` after the timer runs out. Does the ETH go to the `FundingRecipient`?
+        5. **Test the failure path:** Run `yarn deploy --reset` again, contribute less than 1 ETH, wait for the deadline, then `Execute!`. Can you now `withdraw()` your funds?
+
+        > You can run `yarn deploy --reset` any time you want a fresh contract to reload the timer.
+
+        Say **"check"** when you're ready!
       file: "packages/hardhat/contracts/CrowdFund.sol"
       test: "yarn test --grep 'Checkpoint3'"
       hints:
@@ -482,6 +547,16 @@ checkpoints:
         Fill in the `receive()` function so that sending ETH directly to the contract behaves exactly like calling `contribute()`.
 
         This is a one-liner — just call your existing `contribute()` function from inside `receive()`.
+
+        ### Try it out
+
+        After writing the code:
+
+        1. Run `yarn deploy --reset` to get a fresh contract.
+        2. Open http://localhost:3000 — go to the **Debug Contracts** tab.
+        3. Send ETH directly to the contract address — does it update your `balance` and the contract's balance?
+
+        Say **"check"** when you're ready!
       file: "packages/hardhat/contracts/CrowdFund.sol"
       test: "yarn test --grep 'Checkpoint4'"
       hints:
@@ -517,9 +592,7 @@ completion_message: |
 
   ## Next Steps
 
-  - Run `yarn test` to verify all tests pass
-
-  To submit your challenge, complete the remaining checkpoints on the
+  Run `yarn test` to verify all tests pass, then complete the remaining checkpoints on the
   [SpeedRunEthereum challenge page](https://speedrunethereum.com/challenge/crowdfunding):
   - Deploy your contract
   - Ship your frontend
